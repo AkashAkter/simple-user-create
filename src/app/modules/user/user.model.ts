@@ -8,7 +8,11 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, select: 0 },
-    role: { type: String, enum: ["student", "teacher"], required: true },
+    role: {
+      type: String,
+      enum: ["regular", "admin"],
+      default: "regular",
+    },
   },
   {
     timestamps: true,
@@ -34,7 +38,7 @@ userSchema.methods.isPasswordMatched = async function (
 
 // Check if user exists
 userSchema.statics.isUserExist = async function (email: string) {
-  return await this.findOne({ email }).select("+password");
+  return await this.findOne({ email }).select("+password role");
 };
 
 const User = mongoose.model<IUser, UserModel>("User", userSchema);

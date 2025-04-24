@@ -7,9 +7,7 @@ const createUserZodSchema = z.object({
       .string({ required_error: "Email is required" })
       .email("Invalid email format"),
     password: z.string({ required_error: "Password is required" }),
-    role: z.enum(["student", "teacher"], {
-      required_error: "Role is required",
-    }),
+    // 🚫 No role here
   }),
 });
 

@@ -1,19 +1,10 @@
 import mongoose, { Types } from "mongoose";
 
-export enum ENUM_USER_ROLE {
-  STUDENT = 'student',
-  TEACHER = 'teacher',
-}
-
-export type TUserRole = "student" | "teacher";
-
 export interface IUser {
   name: string;
   email: string;
   password: string;
-  role: TUserRole;
-  followingTeachers?: Types.ObjectId[];
-  enrolledCourses?: Types.ObjectId[];
+  role: "regular" | "admin"; // required now
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -29,7 +20,7 @@ export interface IUserLoginResponse {
     _id: string;
     name: string;
     email: string;
-    role: TUserRole;
+    role: "regular" | "admin"; // Make sure role here is strict
   };
 }
 
@@ -40,7 +31,5 @@ export interface IUserMethods {
 export type UserModel = {
   isUserExist(
     email: string
-  ): Promise<
-    Pick<IUser, "email" | "password" | "role"> & { _id: Types.ObjectId }
-  >;
+  ): Promise<Pick<IUser, "email" | "password"> & { _id: Types.ObjectId }>;
 } & mongoose.Model<IUser, object, IUserMethods>;

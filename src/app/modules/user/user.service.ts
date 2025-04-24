@@ -11,11 +11,18 @@ const createUser = async (userData: IUser): Promise<IUser> => {
     throw new ApiError(httpStatus.CONFLICT, "Email already exists");
   }
 
+  // Set default role if not provided
+  if (!userData.role) {
+    userData.role = "regular";
+  }
+
   const user = await User.create(userData);
   return user;
 };
 
-const loginUser = async (payload: ILoginUserInput): Promise<IUserLoginResponse> => {
+const loginUser = async (
+  payload: ILoginUserInput
+): Promise<IUserLoginResponse> => {
   const { email, password } = payload;
 
   const user = await User.findOne({ email }).select("+password");
@@ -28,30 +35,19 @@ const loginUser = async (payload: ILoginUserInput): Promise<IUserLoginResponse> 
     throw new ApiError(httpStatus.UNAUTHORIZED, "Password is incorrect");
   }
 
-  // Create token payload with proper typing
   const tokenPayload = {
     userId: user._id.toString(),
     email: user.email,
     role: user.role,
   };
 
-  // Generate token with explicit type casting
-  const token = jwt.sign(
-    {
-      _id: user._id.toString(), 
-      role: user.role,
-    },
-    config.jwt.secret
-  );
-  
-
-
+  const token = jwt.sign(tokenPayload, config.jwt.secret);
 
   return {
     accessToken: token,
     user: {
       _id: user._id.toString(),
-      name: user.name, // Added name to response
+      name: user.name,
       email: user.email,
       role: user.role,
     },

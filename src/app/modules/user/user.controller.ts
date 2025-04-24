@@ -7,6 +7,8 @@ import { UserService } from "./user.service";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
   const userData = req.body;
+
+  // No need to assign role here, it's handled in the service
   const result = await UserService.createUser(userData);
 
   sendResponse<IUser>(res, {
